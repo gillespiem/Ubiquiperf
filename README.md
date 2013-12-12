@@ -12,34 +12,17 @@ main directory (/jpgraph).
 At the present time it only runs as a client, so effectively it's an upload test. Of course,
 you can always run it from the other side as well.
 
-Known issues:
+## Known issues
 
-If you're running a single threaded instance of iperf, the output of
-the client is problematic and will not work.
+If you're running a single threaded instance of iperf, the output of the client is problematic 
+and will not work. To fix that, recompile iperf with pthread support. 
 
-You can determine this by the output of iperf -v:
-	iperf version 2.0.5 (08 Jul 2010) single threaded is problematic and doesn't work
+## Example usage
 
-OR if you see this zero output when running the iperf by hand
-(ala /usr/bin/iperf -c storage0.ctinetworks.com -i 1 -t 300 -f m):
-
-[  3] -1386783776.1--1386783775.1 sec  0.00 MBytes  0.00 Mbits/sec
-[  3] -1386783775.1--1386783774.1 sec  0.00 MBytes  0.00 Mbits/sec
-[  3] -1386783774.1--1386783773.1 sec  0.00 MBytes  0.00 Mbits/sec
-[  3] -1386783773.1--1386783772.1 sec  0.00 MBytes  0.00 Mbits/sec
-[  3] -1386783772.1--1386783771.1 sec  0.00 MBytes  0.00 Mbits/sec
-[  3] -1386783771.1--1386783770.1 sec  0.00 MBytes  0.00 Mbits/sec
-[  3] -1386783770.1--1386783769.1 sec  0.00 MBytes  0.00 Mbits/sec
-[  3] -1386783769.1--1386783768.1 sec  0.00 MBytes  0.00 Mbits/sec
-
-To fix that, recompile iperf.
-
-Example usage:
-
+```bash
 php ./ubiquiperf.php -s <iperf server> -a <AP IP> -u <AP Username> -p <AP/CPE Password> -d <test duration> -c <CSV OUTPUT> -g <PNG OUTPUT> -h <http|https>
-
+```
 
 Example graphs are found in the images/ directory.
 
-If you have any questions, feel free to contact me:
-gillespiem@braindeadprojects.com
+If you have any questions, feel free to contact me.
