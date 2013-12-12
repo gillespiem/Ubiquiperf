@@ -8,10 +8,9 @@ define("FIFONAME", "/tmp/ubnt_stats_fifo_".time());
 define("IPERF", "/usr/bin/iperf");
 define("IPERF_PATTERN", "/\[(.*)\](.*)sec\s+(.*)\s+([0-9\.]+) Mbits\/sec/");
 
-$Opts = new Options();
-$Opts->parse_cli();
-
-
+/**
+ * Setup autloading of classes
+ */
 function __autoload($classname)
 {
     require("lib/{$classname}.php");
@@ -45,6 +44,10 @@ function signal_handler($signal)
 
 //First ensure that we have everything we need to run.
 consistency_check();
+
+//Parse the command line options
+$Opts = new Options();
+$Opts->parse_cli();
 
 //This doesn't function correctly:
 pcntl_signal(SIGCHLD, "signal_handler");
@@ -106,7 +109,6 @@ else if ($pid)
     
     echo "Creating graph...\n";
     ThroughputGraph::build_graph($Opts->statsfile, $Opts->png_file);
-    
     
     echo "Ok, now exiting\n";
     fclose($fp);
