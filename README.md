@@ -12,6 +12,10 @@ main directory (/jpgraph).
 At the present time it only runs as a client, so effectively it's an upload test. Of course,
 you can always run it from the other side as well.
 
+## Example graph
+
+![Ubiquiperf Graph](https://raw.github.com/gillespiem/Ubiquiperf/master/images/5ghz.home.png)
+
 ## Known issues
 
 If you're running a single threaded instance of iperf, the output of the client is problematic 
