@@ -5,7 +5,7 @@ Graph Ubiquiti AirOS stats during an Iperf test.
 
 This is a quick script to perform an iperf to a remote server while grabbing various statistics
 from a Ubiquiti Access Point or CPE. I just wanted a quick and dirty way to see iperf data
-aligned with signal stats, etc at the same time. It uses jpgraph (jpgraph.net) to plot everything 
+aligned with signal stats, etc at the same time. It uses jpgraph (http://jpgraph.net) to plot everything 
 once the tests are complete. You'll need to download it and install or symlink it into the 
 main directory (/jpgraph).
 
