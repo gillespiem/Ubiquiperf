@@ -65,7 +65,7 @@ if ($pid == -1 )
 else if ($pid)
 {
     //The Parent:
-    //  The parent watches the fifo buffer for new iperf results
+    // The parent watches the fifo buffer for new iperf results
     // Upon a new iperf result it grabs stats information from the
     // Access Point (or CPE)
     // Following the test, the parent generates the PNG file
@@ -88,7 +88,7 @@ else if ($pid)
          $iperf_data = fgets($fp);
      
          //@note: In reality, I should have used the -y c option in iperf which dumps CSV.
-         //      That's why you read the manpages before devel
+         // That's why you read the manpages before devel
          if (preg_match(IPERF_PATTERN, $iperf_data, $iperf_fields))
          {
              $ubnt->display_iperf_update($iperf_fields);
