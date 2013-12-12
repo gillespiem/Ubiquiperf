@@ -10,6 +10,14 @@ class UbntGatherer extends Curl
 {
     private $stats_fp, $username, $password, $ap_ip, $http_proto;
 
+    /**
+     * Constructor method
+     *
+     * @param string $statsfile CSV output file
+     * @param string $username UBNT username for AP/CPE
+     * @param string $ap_ip IP address of AP/CPE to pull json stats from
+     * @param string $http_proto [http|https]
+     */
     public function __construct($statsfile, $username, $password, $ap_ip, $http_proto)
     {
         $this->username = $username;
@@ -32,7 +40,7 @@ class UbntGatherer extends Curl
     /**
      * Method to open the CSV file for write
      * 
-     * @param stats_file - string
+     * @param string $stats_file CSV file to write to
      */
     private function open_statsfile($stats_file)
     {
@@ -66,6 +74,11 @@ class UbntGatherer extends Curl
         return $ubnt_stats;
     }
 
+    /**
+     * Method to log (and display) CSV data live
+     * 
+     * @param string $string pipe delimited data to log
+     */
     private function log($string)
     {
         echo $string;
@@ -91,6 +104,8 @@ class UbntGatherer extends Curl
 
     /**
      * Method to display IPERF and UBNT stats
+     * 
+     * @param array $iperf_fields preg_split() fields from iperf stats
      */
     public function display_iperf_update($iperf_fields)
     {
