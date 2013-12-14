@@ -10,13 +10,25 @@ require_once('jpgraph/jpgraph_line.php');
 
 class ThroughputGraph
 {
+    
+    /**
+     * Stub method, this will validate the CSV file before processing, to
+     *  prevent badness
+     * @param string $datafile The pipe delimited CSV 
+     * @return boolean Boolean as to whether it validates
+     */
+    private function validateCSV($datafile)
+    {
+        return TRUE;    
+    }
+    
     /**
      * Method to build the Ubiquiperf graph
      *
      * @param string $datafile the CSV file which should be pipe delimited
      * @param string $outfile the PNG graph
      */
-    public static function build_graph($datafile, $outfile)
+    public static function buildGraph($datafile, $outfile)
     {
         
         $i=0;
@@ -83,8 +95,8 @@ class ThroughputGraph
         $theme_class=new UniversalTheme;
         
         $graph->SetTheme($theme_class);
-        $graph->img->SetAntiAliasing(false);
-        $graph->SetBox(false);
+        $graph->img->SetAntiAliasing(FALSE);
+        $graph->SetBox(FALSE);
         
         
         
@@ -92,19 +104,25 @@ class ThroughputGraph
         $graph->img->SetAntiAliasing();
         
         $graph->yaxis->HideZeroLabel();
-        $graph->yaxis->HideTicks(false,false);
+        $graph->yaxis->HideTicks(FALSE,FALSE);
         
         
-        $graph->xaxis->HideLabels(true);
+        $graph->xaxis->HideLabels(TRUE);
         
     
-        //Calculate average throughput:
+        //Calculate average throughput, omitting 0 values
+        // which are used for delay padding.
         $avg_throughput = 0;
+        $throughput_datapoints = 0;
         foreach ($datay["Throughput"] as $val)
         {
-            $avg_throughput += $val;
+            if ($val <> 0)
+            {
+                $avg_throughput += $val;
+                $throughput_datapoints++;
+            }
         }
-        $avg_throughput = sprintf("%.2f", ($avg_throughput / sizeof($datay["Throughput"])));
+        $avg_throughput = sprintf("%.2f", ($avg_throughput / $throughput_datapoints));
     
     
         // Create the first line
