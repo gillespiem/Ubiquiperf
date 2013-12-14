@@ -1,12 +1,17 @@
 <?php
 /**
- * Script to grab signal stats during the middle of an IPERF test
+ * Ubiquiperf -  grab signal stats during the middle of an IPERF test
  *
+ *
+ * @todo: Start with fixing class method camels.
+ * @todo: Add sanity check in throughput graphing: divide by zero, empty set, etc.
+ * @todo: Cut down on our amount of command line options.
  * @author Matthew Gillespie
  */
 define("FIFONAME", "/tmp/ubnt_stats_fifo_".time());
 define("IPERF", "/usr/bin/iperf");
 define("IPERF_PATTERN", "/\[(.*)\](.*)sec\s+(.*)\s+([0-9\.]+) Mbits\/sec/");
+define("IPERF_NULL", "[  3]  0.0- 1.0 sec  2.00 MBytes  0 Mbits/sec");
 
 /**
  * Setup autloading of classes
@@ -36,23 +41,31 @@ function consistency_check()
     }
 }
 
-// This signal handler is problematic
+/**
+ * This signal handler is problematic, only leaving here for future use.
+ *  Additional notes are below
+ * @param integer $signal POSIX signal
+ */
 function signal_handler($signal) 
 {
     echo "Caught a signal!\n";
 }
+
+echo "Ubiquiperf:\n";
 
 //First ensure that we have everything we need to run.
 consistency_check();
 
 //Parse the command line options
 $Opts = new Options();
-$Opts->parse_cli();
+$Opts->parseCli();
 
-//This doesn't function correctly:
-pcntl_signal(SIGCHLD, "signal_handler");
-pcntl_signal(SIGINT, "signal_handler");
-pcntl_signal(SIGTERM, "signal_handler");
+//@todo: This doesn't function correctly.
+//  For some reason SIGCHLD isn't called upon exit of the child.
+//  I can't even seemingly fire off a posix_kill() that will trigger it.
+//  So for now, the Parent loop is watching for an exit code from the child
+//  ala pcntl_waitpid()
+//pcntl_signal(SIGCHLD, "signal_handler");
 
 if (file_exists(FIFONAME))
 {
@@ -67,80 +80,19 @@ if ($pid == -1 )
 }
 else if ($pid)
 {
-    //The Parent:
-    // The parent watches the fifo buffer for new iperf results
-    // Upon a new iperf result it grabs stats information from the
-    // Access Point (or CPE)
-    // Following the test, the parent generates the PNG file
+   
+    //Create the parent object. which watches a buffer of iperf data.
+    $Parent = new ParentProcess($pid, $Opts);
+    $Parent->RunTest();
 
-    $ubnt = new UbntGatherer($Opts->statsfile, $Opts->username, $Opts->password, $Opts->ap_ip, $Opts->http_proto); 
-    echo "Waiting on child {$pid}\n";
-    
-    do
-    {     
-         echo "Waiting for child to create fifo buffer...\n";
-         sleep(0.5);
-    } while (!file_exists(FIFONAME));
-    
-     $ubnt->display_header();
-    
-    $exitflag = FALSE;
-    $fp = fopen(FIFONAME, "r");
-    do
-    {
-         $iperf_data = fgets($fp);
-     
-         //@note: In reality, I should have used the -y c option in iperf which dumps CSV.
-         // That's why you read the manpages before devel
-         if (preg_match(IPERF_PATTERN, $iperf_data, $iperf_fields))
-         {
-             $ubnt->display_iperf_update($iperf_fields);
-         }
-    
-         //This could definitely be accomplished better:
-         pcntl_waitpid($pid, $returncode, WNOHANG);
-         if ($returncode <> 0  )
-         {
-             echo "Exitflag toggled\n";
-             $exitflag = TRUE;
-         }
-                 
-    } while (!$exitflag && !feof($fp));
-    
-    echo "Creating graph...\n";
-    ThroughputGraph::build_graph($Opts->statsfile, $Opts->png_file);
-    
-    echo "Ok, now exiting\n";
-    fclose($fp);
-    unlink(FIFONAME);
-
+    exit(0);
 }
 else
 {
-    //The Child:
-    // The childwrites iperf output to a fifo, which the parent operates upon
-    if (!posix_mkfifo(FIFONAME, 0600))
-    {
-       exit(1);
-    }
-    
-    $fp = fopen(FIFONAME, "w");
-     if (!$fp)
-     {
-         echo "Error opening fifo: ".FIFONAME;
-         exit(1);
-     }
-     
-    $iperf = popen(IPERF." {$Opts->iperf_options} -i 1 -f m", "r");
-    while (!feof($iperf))
-    {
-         $iperf_data = fread($iperf, 2048);
-         fputs($fp, $iperf_data);
-    }
-    
-    fclose($iperf);
-     
-    fputs($fp, "Child now exiting\n");
-    fclose($fp);
+    //The Child is an iperf process that writes to a fifo buffer for the parent
+    //  to operate off of.
+    $Child  =  new ChildProcess();
+    $Child->runTest($Opts->iperf_options, $Opts->test_delay);
+
     exit(1);
 }
