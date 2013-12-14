@@ -1,6 +1,4 @@
 <?php
-error_reporting(E_ERROR); 
-
 /**
  * Class to wrap the curl object for things specific to Ubiquiti
  * 
@@ -29,12 +27,12 @@ class UbntGatherer extends Curl
         $this->setUserAgent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1");
         $this->setCookieFile("cookie.txt");
 
-        $this->open_statsfile($statsfile);
+        $this->openStatsFile($statsfile);
     }
 
     public function __destruct()
     {
-        $this->close_statsfile();
+        $this->closeStatsFile();
     }
 
     /**
@@ -42,7 +40,7 @@ class UbntGatherer extends Curl
      * 
      * @param string $stats_file CSV file to write to
      */
-    private function open_statsfile($stats_file)
+    private function openStatsFile($stats_file)
     {
         $this->stats_fp = fopen($stats_file, "w");
         if (!$this->stats_fp)
@@ -55,7 +53,7 @@ class UbntGatherer extends Curl
     /**
      * Method to close the CSV file
      */
-    private function close_statsfile()
+    private function closeStatsFile()
     {
         fclose($this->stats_fp);
     }
@@ -88,7 +86,7 @@ class UbntGatherer extends Curl
     /**
      * Method to display the CSV header
      */
-    public function display_header()
+    public function displayHeader()
     {
         $this->log("RSSI|Signal|".
                       "NoiseFloor|ChWidth|".
@@ -107,7 +105,7 @@ class UbntGatherer extends Curl
      * 
      * @param array $iperf_fields preg_split() fields from iperf stats
      */
-    public function display_iperf_update($iperf_fields)
+    public function displayIperfUpdate($iperf_fields)
     {
         $ubnt_info = $this->grab_signalstats();
 
