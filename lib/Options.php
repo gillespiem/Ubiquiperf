@@ -6,16 +6,16 @@ class Options
 {
 
     public $duration, $username, $password, $ap_ip, $statsfile, $png_file, $http_proto,
-                $iperf_options;
+                $iperf_options, $test_delay;
 
     /**
      * Method to parse CLI options ala getopt()
      *
      */
-    public function parse_cli()
+    public function parseCli()
     {   
         //Command line handling
-        $opts = "a:u:p:c:g:h:d:";
+        $opts = "a:u:p:c:g:h:d:y:";
         $clientopts = "s:";
         $serveropts = "l";
         
@@ -26,7 +26,7 @@ class Options
         { 
             if (!isset($options[$val]))
             {
-                echo "Usage: [-s <iperf server> | -l ] -a <ap ip> -d <duration> -u <username> -p <password> -h <http|https> -c <csv outfile> -g <png outfile>\n";
+                echo "Usage: [-s <iperf server> | -l ] -a <ap ip> -d <duration> -u <username> -p <password> -h <http|https> -c <csv outfile> -g <png outfile> -y <delay padding>\n";
                 echo "Hint: Try setting -{$val}\n";
                 exit(1);
             }
@@ -55,6 +55,7 @@ class Options
         $this->statsfile = $options["c"];
         $this->png_file = $options["g"];
         $this->http_proto = $options["h"];
+        $this->test_delay = $options["y"];
     
     }
     
