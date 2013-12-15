@@ -33,10 +33,10 @@ class ParentProcess
 
         do
         {
-        echo "Waiting for child to create fifo buffer...\n";
-                sleep(1);
+            echo "Waiting for child to create fifo buffer...\n";
+            sleep(1);
         } while (!file_exists(FIFONAME));
-        }
+    }
 
     /**
      * Method to open fifo buffer created by the child process for read
@@ -65,28 +65,28 @@ class ParentProcess
         do
         {
 
-        $iperf_data = fgets($this->fifo_fp);
-         
-        //@note: In reality, I should have used the -y c option in iperf which dumps CSV.
-        // That's why you read the manpages before devel
-        
-        //@todo: If I continue to watch for "END", how I'm doing now,
-        //          I could potentially send "NULL" instead of the
-        //          bunk IPERF_NULL.
-        if (preg_match(IPERF_PATTERN, $iperf_data, $iperf_fields))
-        {
-            $this->Ubnt->displayIperfUpdate($iperf_fields);
-        }
-
-        //This could definitely be accomplished better:
-        pcntl_waitpid($this->pid, $returncode, WNOHANG);
-        if ($returncode <> 0  )
+            $iperf_data = fgets($this->fifo_fp);
+             
+            //@note: In reality, I should have used the -y c option in iperf which dumps CSV.
+            // That's why you read the manpages before devel
+            
+            //@todo: If I continue to watch for "END", how I'm doing now,
+            //          I could potentially send "NULL" instead of the
+            //          bunk IPERF_NULL.
+            if (preg_match(IPERF_PATTERN, $iperf_data, $iperf_fields))
             {
-            echo "Exitflag toggled\n";
-            $this->exitflag = TRUE;
-        }
-         
-        //} while (!$this->exitflag && !feof($this->fifo_fp));
+                $this->Ubnt->displayIperfUpdate($iperf_fields);
+            }
+    
+            //This could definitely be accomplished better:
+            pcntl_waitpid($this->pid, $returncode, WNOHANG);
+            if ($returncode <> 0  )
+            {
+                echo "Exitflag toggled\n";
+                $this->exitflag = TRUE;
+            }
+             
+            //} while (!$this->exitflag && !feof($this->fifo_fp));
         } while ($iperf_data !== "END");
     }
 
