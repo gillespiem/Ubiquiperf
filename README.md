@@ -21,10 +21,24 @@ you can always run it from the other side as well.
 If you're running a single threaded instance of iperf, the output of the client is problematic 
 and will not work. To fix that, recompile iperf with pthread support. 
 
+## Options
+
+```no-highlight
+
+-s Iperf server to connect to.
+-a Ubiquiti AirOS device IP.
+-u AirOS login (typically "ubnt").
+-p AirOS password.
+-h AirOS web protocol (http||https)
+-d Duration of iperf test (in seconds).
+-c CSV file to output results to.
+-g PNG graph of the test.
+-y Amount of time to delay start of iperf test (in seconds).
+
 ## Example usage
 
 ```bash
-php ./ubiquiperf.php -s <iperf server> -a <AP IP> -u <AP Username> -p <AP/CPE Password> -d <test duration> -c <CSV OUTPUT> -g <PNG OUTPUT> -h <http|https>
+php ./ubiquiperf.php -s <iperf server> -a <AP IP> -u <AP Username> -p <AP/CPE Password> -d <test duration> -c <CSV OUTPUT> -g <PNG OUTPUT> -h <http|https> -y <test delay>
 ```
 
 Example graphs are found in the images/ directory.
