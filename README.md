@@ -24,7 +24,6 @@ and will not work. To fix that, recompile iperf with pthread support.
 ## Options
 
 ```no-highlight
-
 -s Iperf server to connect to.
 -a Ubiquiti AirOS device IP.
 -u AirOS login (typically "ubnt").
@@ -34,6 +33,7 @@ and will not work. To fix that, recompile iperf with pthread support.
 -c CSV file to output results to.
 -g PNG graph of the test.
 -y Amount of time to delay start of iperf test (in seconds).
+```
 
 ## Example usage
 
